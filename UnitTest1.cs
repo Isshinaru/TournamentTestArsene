@@ -1,4 +1,11 @@
 using NUnit.Framework;
+/*
+ *
+ * This is a duel simulation
+ *
+ * Blow exchange are sequential, A engage B means that A will give the first blow, then B will respond
+ *
+ */
 
 namespace TournamentTestArsene
 {
@@ -18,6 +25,7 @@ namespace TournamentTestArsene
         [Test]
         public void SwordsmanVsViking()
         {
+
             Warrior swordsman = new Swordsman();
 
             Viking viking = new Viking();
@@ -28,37 +36,25 @@ namespace TournamentTestArsene
             Assert.AreEqual(35, viking.HitPoints());
         }
 
-        
-        /* a buckler cancel all the damages of a blow one time out of two
+        /*
+        * a buckler cancel all the damages of a blow one time out of two
         * a buckler is destroyed after blocking 3 blow from an axe
-        */ 
+        */
         [Test]
         public void SwordsmanWithBucklerVsVikingWithBuckler()
         {
-            /*
             Swordsman swordsman = new Swordsman()
                 .Equip("buckler");
 
             Viking viking = new Viking()
                     .Equip("buckler");
 
-            I haven't seen this way of calling a method after creating an instance before, so i'll twist it a little bit in order to achieve the test.I'll do some more research after.
-            */
-            Swordsman swordsman = new Swordsman();
-                swordsman.Equip("buckler");
-
-            Viking viking = new Viking();
-                    viking.Equip("buckler");
-
             swordsman.Engage(viking);
-
-            /*A little test to verify is buckler is actually suppressed
-            *Assert.IsTrue(viking.IsEquipped("buckler"));
-            *Assert.IsTrue(!swordsman.IsEquipped("buckler"));*/
 
             Assert.AreEqual(0, swordsman.HitPoints());
             Assert.AreEqual(70, viking.HitPoints());
         }
+
 
         /*
          * an Highlander as 150 hit points and fight with a Great Sword
@@ -69,24 +65,17 @@ namespace TournamentTestArsene
         public void ArmoredSwordsmanVsHighlander()
         {
             Highlander highlander = new Highlander();
-            /*Same thing as previously for now
+
             Swordsman swordsman = new Swordsman()
                     .Equip("buckler")
-                    .Equip("armor");*/
-
-            Swordsman swordsman = new Swordsman();
-            swordsman.Equip("buckler");
-            swordsman.Equip("armor");
+                    .Equip("armor");
 
             swordsman.Engage(highlander);
-
-            /*Assert.IsTrue(swordsman.IsEquipped("buckler"));
-            Assert.IsTrue(swordsman.IsEquipped("armor"));*/
 
             Assert.AreEqual(0, swordsman.HitPoints());
             Assert.AreEqual(10, highlander.HitPoints());
         }
-        
+
         /*
          * a vicious Swordsman is a Swordsman that put poison on his weapon.
          * poison add 20 damages on two first blows
@@ -96,28 +85,45 @@ namespace TournamentTestArsene
         [Test]
         public void ViciousSwordsmanVsVeteranHighlander()
         {
-            /* Here we go again
             Swordsman swordsman = new Swordsman("Vicious")
                     .Equip("axe")
                     .Equip("buckler")
                     .Equip("armor");
-            */
-            Swordsman swordsman = new Swordsman("Vicious");
-            swordsman.Equip("axe");
-            swordsman.Equip("buckler");
-            swordsman.Equip("armor");
 
             Highlander highlander = new Highlander("Veteran");
 
             swordsman.Engage(highlander);
 
-            Assert.IsTrue(swordsman.IsEquipped("buckler"));
-            Assert.IsTrue(highlander.IsEquipped("berserker"));
-
-            //Assert.AreEqual(0, highlander.HitPoints());
             Assert.AreEqual(1, swordsman.HitPoints());
             Assert.AreEqual(0, highlander.HitPoints());
         }
-        
+        [Test]
+        public void ViciousSwordsmanVsArmoredViking()
+        {
+            Swordsman swordsman = new Swordsman("Vicious")
+                    .Equip("buckler");
+
+            Viking viking = new Viking()
+                .Equip("armor");
+
+            swordsman.Engage(viking);
+
+            Assert.AreEqual(0, swordsman.HitPoints());
+            Assert.AreEqual(34, viking.HitPoints());
+        }
+        [Test]
+        public void VeteranHighlanderVsVikingWithBucklerAndGreatSword()
+        {
+            Highlander highlander = new Highlander("Veteran");
+
+            Viking viking = new Viking()
+                .Equip("buckler")
+                .Equip("greatSword");
+
+            viking.Engage(highlander);
+
+            Assert.AreEqual(0, highlander.HitPoints());
+            Assert.AreEqual(24, viking.HitPoints());
+        }
     }
 }

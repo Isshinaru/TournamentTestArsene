@@ -13,22 +13,40 @@ namespace TournamentTestArsene
         protected List<String> specifics = new List<string>();
         protected int bucklerHP = 3;
         protected bool isBucklerActive = true;
-        public Warrior(string _speciality = "normal", int _hitPoints = 100, int _dmg = 5, string _weapon= "handSword")
+        protected int missCount = 0;
+        internal Warrior(string _speciality = "normal", int _hitPoints = 100, int _dmg = 5, string _weapon= "handSword")
         {
             hitPoints = _hitPoints;
             dmg = _dmg;
             weapon = _weapon;
         }
-        virtual public void Engage(Warrior _opponent)
+        virtual internal void Engage(Warrior _opponent)
         {
+            if (weapon == "greatSword")
+            {
+                missCount++;
+                if (missCount == 3)
+                {
+                    missCount = 0;
+                    _opponent.Engage(this);
+                    return;
+                }
+            }
             int _finalBlow = dmg;
             if (specifics.Contains("armor"))
             {
-                _finalBlow = (int)MathF.Max(0, _finalBlow-1);
+                _finalBlow = (int)MathF.Max(0, _finalBlow - 1);
             }
-            _opponent.ReceiveDamage(_finalBlow, this);
+            if (_finalBlow > 0)
+            {
+                _opponent.ReceiveDamage(_finalBlow, this);
+            }
+            else
+            {
+                _opponent.Engage(this);
+            }
         }
-        virtual public void ReceiveDamage(int _opponentsBlow, Warrior _opponent)
+        virtual protected void ReceiveDamage(int _opponentsBlow, Warrior _opponent)
         {
             int _finalDmg = _opponentsBlow;
             //damage mitigation
@@ -64,11 +82,11 @@ namespace TournamentTestArsene
                 Engage(_opponent);
             }
         }
-        public int HitPoints()
+        internal int HitPoints()
         {
             return hitPoints;
         }
-        public void Equip(string _newEquipment)
+        internal virtual Warrior Equip(string _newEquipment)
         {
             switch (_newEquipment)
             {
@@ -85,12 +103,12 @@ namespace TournamentTestArsene
                     dmg = 12;
                     break;
                 default:
-                    specifics.Add(_newEquipment);
+                    if(!specifics.Contains(_newEquipment)) specifics.Add(_newEquipment);
                     break;
             }
-            
+            return this;
         }
-        public bool IsEquipped(string _equipment)
+        internal bool IsEquipped(string _equipment)
         {
             return specifics.Contains(_equipment);
         }
